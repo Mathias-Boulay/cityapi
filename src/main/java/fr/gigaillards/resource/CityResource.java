@@ -1,32 +1,31 @@
 package fr.gigaillards.resource;
 
 import fr.gigaillards.entity.City;
-import io.quarkus.hibernate.reactive.panache.Panache;
+import fr.gigaillards.repository.CityRepository;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
 @Path("city")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class CityResource {
+
+    @Inject
+    CityRepository cityRepository;
 
     @GET
     public Uni<List<City>> findAll() {
-        return City.findAll().list();
+        return cityRepository.findAll();
     }
 
     @POST
-    public Uni<Response> createOne(@Valid City cityDto) {
-        return cityDto.persistAndFlush()
-                .onItem().ifNotNull().transform(city -> Response.ok(city).status(201).build())
-                .onItem().ifNull().continueWith(Response.ok().status(400)::build);
+    public Uni<Response> createOne(@Valid City city) {
+        return cityRepository.createCity(city);
     }
 }

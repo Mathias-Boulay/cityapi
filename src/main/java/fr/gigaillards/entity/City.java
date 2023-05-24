@@ -1,24 +1,71 @@
 package fr.gigaillards.entity;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
-public class City extends PanacheEntity {
+@NamedQuery(name = "City.findAll", query = "SELECT c FROM City c")
+public class City {
+    private Long id;
+
     @NotBlank(message = "Department code cannot be blank")
-    @Column(name = "department_code")
-    public String departmentCode;
+    private String departmentCode;
 
     @NotBlank(message = "Zip Code cannot be blank")
-    @Column(name = "zip_code")
-    public String zipCode;
+    private String zipCode;
 
     @NotBlank(message = "Name cannot be blank")
-    public String name;
+    private String name;
 
-    public Float lat;
+    private Float lat;
 
-    public Float lon;
+    private Float lon;
+
+    @Id
+    @SequenceGenerator(name = "citySeq", sequenceName = "city_id_seq")
+    @GeneratedValue(generator = "citySeq")
+    public Long getId() {
+        return id;
+    }
+
+    public String getDepartmentCode() {
+        return departmentCode;
+    }
+
+    public void setDepartmentCode(String departmentCode) {
+        this.departmentCode = departmentCode;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Float getLat() {
+        return lat;
+    }
+
+    public void setLat(Float lat) {
+        this.lat = lat;
+    }
+
+    public Float getLon() {
+        return lon;
+    }
+
+    public void setLon(Float lon) {
+        this.lon = lon;
+    }
 }
