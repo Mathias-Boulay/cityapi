@@ -3,7 +3,6 @@ package fr.gigaillards.city;
 import fr.gigaillards.entity.City;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -16,8 +15,7 @@ public class CityResourceE2E {
         given()
                 .when().get("/city")
                 .then()
-                .statusCode(200)
-                .log();
+                .statusCode(200);
     }
 
     @Test
@@ -27,7 +25,7 @@ public class CityResourceE2E {
         newCity.setLat(8f);
         newCity.setName("Aubagne");
         newCity.setZipCode("13400");
-        newCity.setDepartmentCode("13");
+        newCity.setDepartmentCode("13");;
 
         given()
                 .when()
@@ -38,6 +36,11 @@ public class CityResourceE2E {
                 .post("/city")
                 .then()
                 .statusCode(201)
-                .body();
+                .body("id", notNullValue())
+                .body("name", is(newCity.getName()))
+                .body("zipCode", is(newCity.getZipCode()))
+                .body("departmentCode", is(newCity.getDepartmentCode()))
+                .body("lat", is(newCity.getLat()))
+                .body("lon", is(newCity.getLon()));
     }
 }
