@@ -33,7 +33,6 @@ public class CityResource {
     @POST
     @WithTransaction
     public Uni<Response> createOne(@Valid City city) {
-
         return cityRepository.createCity(city);
     }
 }
