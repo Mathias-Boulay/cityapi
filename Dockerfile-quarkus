@@ -20,6 +20,8 @@ COPY --from=builder /opt/build/build/*-runner /opt/app
 
 WORKDIR /opt/app
 
+ENTRYPOINT ["./cityapi-1.0.0-SNAPSHOT-runner"]
+
 
 
 
