@@ -1,4 +1,5 @@
 package fr.gigaillards.service;
+
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.flyway.runtime.FlywayContainer;
