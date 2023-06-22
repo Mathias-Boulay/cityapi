@@ -11,6 +11,9 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import java.util.List;
 
@@ -23,12 +26,16 @@ public class CityResource {
     CityRepository cityRepository;
 
     @GET
+    @Counted(name = "performedCalls", description = "How many calls have been made to this resource")
+    @Timed(name = "callTimer", description = "A measure of how long it takes to perform the call", unit = MetricUnits.MILLISECONDS)
     public Uni<List<City>> findAll() {
         return cityRepository.findAll();
     }
 
     @POST
     @WithTransaction
+    @Counted(name = "performedCalls", description = "How many calls have been made to this resource")
+    @Timed(name = "callTimer", description = "A measure of how long it takes to perform the call", unit = MetricUnits.MILLISECONDS)
     public Uni<Response> createOne(@Valid City city) {
         return cityRepository.createCity(city);
     }
