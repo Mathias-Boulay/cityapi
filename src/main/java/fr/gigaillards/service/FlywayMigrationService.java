@@ -42,12 +42,13 @@ public class FlywayMigrationService
         logger.info("Initialising flyway...");
         logger.info("Checking required environment variables...");
 
-        String missingVars = getMissingVars(
+        String emptyVars = getEmptyVars(
                 new String[]{"CITY_API_DB_URL", "CITY_API_DB_USER", "CITY_API_DB_PWD"},
                 datasourceUrl, datasourceUsername, datasourcePassword
         );
-        if(missingVars != null){
-            logger.error("Missing environment variables: "+missingVars);
+
+        if(emptyVars != null){
+            logger.error("Empty environment variables: "+emptyVars);
             Quarkus.asyncExit();
             return;
         }
@@ -77,18 +78,18 @@ public class FlywayMigrationService
     }
 
     @Nullable
-    private String getMissingVars(String[] varNames, String... vars){
-        String missingVars = null;
+    private String getEmptyVars(String[] varNames, String... vars){
+        String emptyVars = null;
         for(int i = 0; i < vars.length; i++){
             String str = vars[i];
             if(str != null && !str.isBlank())
                 continue;
 
-            if(missingVars == null)
-                missingVars = varNames[i];
+            if(emptyVars == null)
+                emptyVars = varNames[i];
             else
-                missingVars += ", "+varNames[i];
+                emptyVars += ", "+varNames[i];
         }
-        return missingVars;
+        return emptyVars;
     }
 }
