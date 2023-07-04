@@ -7,13 +7,13 @@
 
 name: Java CI with Gradle
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/quarkus-dev
+
 on:
   workflow_dispatch:
   push:
-
-permissions:
-  contents: read
-  packages: write
 
 jobs:
   build:
@@ -54,6 +54,6 @@ jobs:
           context: .
           file: ./Dockerfile-quarkus
           push: true
-          tags: ghcr.io/cityapi/quarkus-dev:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
 
