@@ -55,6 +55,6 @@ jobs:
           context: .
           file: ./Dockerfile-quarkus
           push: true
-          tags: cityapi/quarkus-dev:latest
+          tags: ghcr.io/cityapi/quarkus-dev:latest
 
 
