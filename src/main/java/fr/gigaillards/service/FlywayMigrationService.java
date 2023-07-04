@@ -5,7 +5,9 @@ import io.quarkus.arc.InstanceHandle;
 import io.quarkus.flyway.runtime.FlywayContainer;
 import io.quarkus.flyway.runtime.FlywayContainerProducer;
 import io.quarkus.flyway.runtime.QuarkusPathLocationScanner;
+import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -35,9 +37,22 @@ public class FlywayMigrationService
     @ConfigProperty(name = "todo.migration.files")
     List<String> files;
 
-    public void runFlywayMigration(@Observes StartupEvent event)
+    public void init()
     {
         logger.info("Initialising flyway...");
+        logger.info("Checking required environment variables...");
+
+        String missingVars = getMissingVars(
+                new String[]{"CITY_API_DB_URL", "CITY_API_DB_USER", "CITY_API_DB_PWD"},
+                datasourceUrl, datasourceUsername, datasourcePassword
+        );
+        if(missingVars != null){
+            logger.error("Missing environment variables: "+missingVars);
+            Quarkus.asyncExit();
+            return;
+        }
+        logger.info("Got environment variables successfully !");
+
         QuarkusPathLocationScanner.setApplicationMigrationFiles(files.stream()
                 .map(file -> "db/migration/" + file)
                 .collect(Collectors.toList()));
@@ -59,5 +74,21 @@ public class FlywayMigrationService
             return "jdbc:" + datasourceUrl.substring("vertx-reactive:".length());
         else
             return "jdbc:" + datasourceUrl;
+    }
+
+    @Nullable
+    private String getMissingVars(String[] varNames, String... vars){
+        String missingVars = null;
+        for(int i = 0; i < vars.length; i++){
+            String str = vars[i];
+            if(str != null && !str.isBlank())
+                continue;
+
+            if(missingVars == null)
+                missingVars = varNames[i];
+            else
+                missingVars += ", "+varNames[i];
+        }
+        return missingVars;
     }
 }
