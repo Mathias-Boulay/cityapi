@@ -9,7 +9,7 @@ name: Java CI with Gradle
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/quarkus-dev
+  IMAGE_NAME: mathias-boulay/quarkus-dev
 
 on:
   workflow_dispatch:
@@ -55,5 +55,7 @@ jobs:
           file: ./Dockerfile-quarkus
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
 
