@@ -1,4 +1,4 @@
-# cityapi
+# Cityapi
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
@@ -11,52 +11,68 @@ You can run your application in dev mode that enables live coding using:
 ./gradlew quarkusDev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+## Questions
 
-## Packaging and running the application
+### 1
 
-The application can be packaged using:
-```shell script
-./gradlew build
-```
-It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
+See `compose.yml` file.
 
-The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
+### 2
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./gradlew build -Dquarkus.package.type=uber-jar
-```
+The database schema and the data is populated using [flyway](https://flywaydb.org/).
+The migrations are located in `src/main/resources/db/migration` folder.
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
+### 3
 
-## Creating a native executable
+Populate the .env file according to the .env.example file.
 
-You can create a native executable using: 
-```shell script
-./gradlew build -Dquarkus.package.type=native
-```
+Execute `docker compose up -d` and test the application in your browser:
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true
-```
+- GET http://localhost:8080/city
+- POST http://localhost:8080/city
 
-You can then execute your native executable with: `./build/cityapi-1.0.0-SNAPSHOT-runner`
+Sadly, the service is not configurable using the required environment variables. We did not find a way
+to change the environment variable names.
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/gradle-tooling.
+### 4
 
-## Related Guides
+The tests are located in `src/test/java/com/airhacks/cityapi/CityResourceE2E.java` file. However, for some
+god forsaken reason, the tests are not executed when running `./gradlew test` command. We did not find a way
+to make the tests run.
 
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Validate object properties (field, getter) and method parameters for your beans (REST, CDI, Jakarta Persistence)
-- RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- Reactive PostgreSQL client ([guide](https://quarkus.io/guides/reactive-sql-clients)): Connect to the PostgreSQL database using the reactive pattern
+### 5
 
-## Provided Code
+See `Dockerfile-quarkus`.
 
-### RESTEasy Reactive
+It is a multi stage build. The first stage builds the application using gradle. The second stage copies the
+application to a new image and runs it.
 
-Easily start your Reactive RESTful Web Services
+It uses graalvm to build a native image.
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+### 6, 7, 8, 9
+
+See `.github/workflows/ci.yml` file.
+
+### 10
+
+See `.github/workflows/release.yml` file.
+
+### 11
+
+We chose to use k3d instead of minikube because it is easier to use and it is faster.
+
+See `k3d.sh` file.
+
+## 12
+
+The chart is located in `cityapi` folder.
+
+It creates a service, a deployment and an ingress. The ingress is configured to use the `cityapi.local` domain.
+
+It also creates a postgresql database.
+
+## 13
+
+See `k3d.sh` file.
+
+## 14
