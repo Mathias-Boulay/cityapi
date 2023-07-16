@@ -6,10 +6,10 @@ import io.quarkus.flyway.runtime.FlywayContainer;
 import io.quarkus.flyway.runtime.FlywayContainerProducer;
 import io.quarkus.flyway.runtime.QuarkusPathLocationScanner;
 import io.quarkus.runtime.Quarkus;
-import io.quarkus.runtime.StartupEvent;
+
 import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
+
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.flywaydb.core.Flyway;
@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class FlywayMigrationService
-{
+public class FlywayMigrationService {
     @Inject
     Logger logger;
 
@@ -37,8 +36,7 @@ public class FlywayMigrationService
     @ConfigProperty(name = "todo.migration.files")
     List<String> files;
 
-    public void init()
-    {
+    public void init() {
         logger.info("Initialising flyway...");
         logger.info("Checking required environment variables...");
 
@@ -47,8 +45,8 @@ public class FlywayMigrationService
                 datasourceUrl, datasourceUsername, datasourcePassword
         );
 
-        if(emptyVars != null){
-            logger.error("Empty environment variables: "+emptyVars);
+        if (emptyVars != null) {
+            logger.error("Empty environment variables: " + emptyVars);
             Quarkus.asyncExit();
             return;
         }
@@ -60,8 +58,7 @@ public class FlywayMigrationService
         DataSource datasource = Flyway.configure()
                 .dataSource(getDatasourceUrl(), datasourceUsername, datasourcePassword)
                 .getDataSource();
-        try (InstanceHandle<FlywayContainerProducer> instance = Arc.container().instance(FlywayContainerProducer.class))
-        {
+        try (InstanceHandle<FlywayContainerProducer> instance = Arc.container().instance(FlywayContainerProducer.class)) {
             FlywayContainerProducer flywayProducer = instance.get();
             FlywayContainer flywayContainer = flywayProducer.createFlyway(datasource, "<default>", true, true);
             Flyway flyway = flywayContainer.getFlyway();
@@ -69,26 +66,28 @@ public class FlywayMigrationService
         }
     }
 
-    private String getDatasourceUrl()
-    {
-        if (datasourceUrl.startsWith("vertx-reactive:"))
+    private String getDatasourceUrl() {
+        if (datasourceUrl.startsWith("vertx-reactive:")) {
             return "jdbc:" + datasourceUrl.substring("vertx-reactive:".length());
-        else
+        } else {
             return "jdbc:" + datasourceUrl;
+        }
     }
 
     @Nullable
-    private String getEmptyVars(String[] varNames, String... vars){
+    private String getEmptyVars(String[] varNames, String... vars) {
         String emptyVars = null;
-        for(int i = 0; i < vars.length; i++){
+        for (int i = 0; i < vars.length; i++) {
             String str = vars[i];
-            if(str != null && !str.isBlank())
+            if (str != null && !str.isBlank()) {
                 continue;
+            }
 
-            if(emptyVars == null)
+            if (emptyVars == null) {
                 emptyVars = varNames[i];
-            else
-                emptyVars += ", "+varNames[i];
+            } else {
+                emptyVars += ", " + varNames[i];
+            }
         }
         return emptyVars;
     }
