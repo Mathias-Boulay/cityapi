@@ -73,6 +73,11 @@ It also creates a postgresql database.
 
 ## 13
 
-See `k3d.sh` file.
+`k3d cluster create cityapi --api-port 6550 -p "1024:8080@loadbalancer" --agents 2`
 
 ## 14
+
+`helm install cityapi cityapi`
+
+Note: the app starts but outputs no logs. We did not find a way to make it output logs.
+
