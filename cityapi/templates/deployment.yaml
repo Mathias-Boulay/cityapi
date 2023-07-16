@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cityapi.fullname" . }}
+  labels:
+    {{- include "cityapi.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "cityapi.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cityapi.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            - name: QUARKUS_DATASOURCE_REACTIVE_URL
+              value: "postgresql://{{ include "cityapi.fullname" .  }}-postgresql:5432/cityapi"
+            - name: QUARKUS_DATASOURCE_USERNAME
+              value: {{ .Values.postgresql.auth.username }}
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              value: {{ .Values.postgresql.auth.password }}
+            - name: TODO_MIGRATION_FILES
+              value: V1.0.0__init.sql
+            - name: QUARKUS_DATASOURCE_JDBC
+              value: "false"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /_health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
