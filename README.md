@@ -7,6 +7,7 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
+
 ```shell script
 ./gradlew quarkusDev
 ```
@@ -75,9 +76,23 @@ It also creates a postgresql database.
 
 `k3d cluster create cityapi --api-port 6550 -p "1024:8080@loadbalancer" --agents 2`
 
-## 14
-
 `helm install cityapi cityapi`
 
 Note: the app starts but outputs no logs. We did not find a way to make it output logs.
+
+## 14
+
+Using the library `Micrometer`, prometheus compatible metrics are made available on the `/metrics` endpoint
+
+## 15
+
+Once the compose is up, head over to [http://localhost:9090](http://localhost:9090) and use the metrics explorer to
+notice the newly available metrics, like cpu usage ones for the job `app`
+
+## 16
+
+Once the compose is up, head over to [http://localhost:3000](http://localhost:3000), login with `admin:admin`.
+Notice that grafana ignores my already provisioned datasource, and add a prometheus data source.
+Url: `http://prometheus:9090`. Then you can create dashboard with the same metrics visible from prometheus.
+
 
