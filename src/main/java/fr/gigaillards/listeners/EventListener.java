@@ -12,7 +12,7 @@ public class EventListener {
     @Inject
     FlywayMigrationService flywayMigrationService;
 
-    public void onStart(@Observes StartupEvent evt){
+    public void onStart(@Observes StartupEvent evt) {
         flywayMigrationService.init();
     }
 
