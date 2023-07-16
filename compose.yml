@@ -7,6 +7,11 @@ services:
       POSTGRES_PASSWORD: cityapi
       POSTGRES_DATABASE: cityapi
       POSTGRES_USER: cityapi
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   quarkus-app:
     image: custom-quarkus-app
@@ -16,8 +21,20 @@ services:
     env_file:
       - .env
     command: ./cityapi-1.0.0-SNAPSHOT-runner
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8080:8080"
 
+
+  prometheus:
+    image: prom/prometheus
+    depends_on:
+      - quarkus-app
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
 
 
